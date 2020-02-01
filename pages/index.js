@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react'
-import axios from 'axios'
 import Head from 'next/head'
 import getConfig from 'next/config'
 import styled from 'styled-components'
 import { Button } from 'antd'
+import api from '../lib/api'
 
 const { serverRuntimeConfig, publicRuntimeConfig } = getConfig()
 console.log(serverRuntimeConfig, publicRuntimeConfig)
@@ -14,12 +14,6 @@ const Title = styled.h1`
 `
 
 const Home = () => {
-  useEffect(() => {
-    axios.get('/api/user/info').then(res => {
-      console.log(res)
-    })
-  }, [])
-
   return (
     <div>
       <Head>
@@ -35,6 +29,15 @@ const Home = () => {
       </div>
     </div>
   )
+}
+
+Home.getInitialProps = async (ctx) => {
+  const result = await api.request({
+    url: '/search/repositories?q=react'
+  }, ctx.req, ctx.res)
+  return {
+    data: result.data
+  }
 }
 
 export default Home

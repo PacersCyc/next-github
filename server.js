@@ -1,10 +1,12 @@
 const Koa = require('koa')
 const Router = require('koa-router')
 const session = require('koa-session')
+const koaBody = require('koa-body')
 const next = require('next')
 const Redis = require('ioredis')
 
 const auth = require('./server/auth')
+const api = require('./server/api')
 const RedisSessionStore = require('./server/session-store')
 
 const dev = process.env.NODE_ENV !== 'production'
@@ -18,6 +20,9 @@ app.prepare().then(() => {
   const router = new Router()
 
   server.keys = ['next github app']
+
+  server.use(koaBody())
+  
   const SESSION_CONFIG = {
     key: 'next',
     // maxAge: 10*1000,
@@ -26,6 +31,7 @@ app.prepare().then(() => {
 
   server.use(session(SESSION_CONFIG, server))
   auth(server)
+  api(server)
 
   router.get('/api/user/info', (ctx, next) => {
     const user = ctx.session.userInfo
@@ -38,26 +44,10 @@ app.prepare().then(() => {
     }
   })
 
-  router.get('/set/user', (ctx, next) => {
-    ctx.session.user = {
-      name: 'cyc',
-      age: 18
-    }
-    ctx.body = 'set session success'
-  })
-
-  router.get('/delete/user', (ctx, next) => {
-    ctx.session = null
-    ctx.body = 'delete session success'
-  })
-
-  router.get('/test', (ctx) => {
-    ctx.body = '<p>request /test</p>'
-  })
-
   server.use(router.routes())
 
   server.use(async (ctx, next) => {
+    ctx.req.session = ctx.session
     await handle(ctx.req, ctx.res)
     ctx.respond = false
   })
