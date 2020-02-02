@@ -25,7 +25,8 @@ class MyApp extends App {
     })
   }
 
-  static async getInitialProps({ Component, ctx }) {
+  static async getInitialProps(ctx) {
+    const { Component } = ctx
     let pageProps = {}
     if (Component.getInitialProps) {
       pageProps = await Component.getInitialProps(ctx)
@@ -56,12 +57,6 @@ class MyApp extends App {
           this.state.loading ? <PageLoading /> : null
         }
         <Layout>
-          <Link href="/">
-            <a>Index</a>
-          </Link>
-          <Link href="/detail">
-            <a>Detail</a>
-          </Link>
           <Component {...pageProps} />
         </Layout>
       </Provider>
