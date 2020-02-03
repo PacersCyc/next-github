@@ -1,9 +1,10 @@
-import { memo, isValidElement } from 'react'
+import { memo, isValidElement, useEffect } from 'react'
 import Router, { withRouter } from 'next/router'
 import Link from 'next/link'
 import { Row, Col, List, Pagination } from 'antd'
 import api from '../lib/api'
 import Repo from '../components/Repo'
+import { cacheArray } from '../lib/repo-basic-cache'
 
 const LANGUAGES = ['JavaScript', 'HTML', 'CSS', 'TypeScript', 'Java', 'Rust']
 const SORT_TYPES = [
@@ -33,6 +34,7 @@ const SORT_TYPES = [
 ]
 
 const per_page = 20
+const isServer = typeof window === 'undefined'
 
 function noop() {
 
@@ -80,6 +82,12 @@ const FilterLink = memo(({ name, query, lang, sort, order, page }) => {
 const Search = ({ router, repos }) => {
   const { ...querys } = router.query
   const { lang, sort, order, page } = router.query
+
+  useEffect(() => {
+    if (!isServer) {
+      cacheArray(repos.items)
+    }
+  })
 
   return (
     <div className="root">
@@ -154,7 +162,7 @@ const Search = ({ router, repos }) => {
               itemRender={(page, type, ol) => {
                 // const p = type === 'page' ? page : (type === 'prev' ? page - 1 : page + 1)
                 const name = type === 'page' ? page : ol
-                console.log(type, page)
+                // console.log(type, page)
                 return (
                   <FilterLink 
                     {...querys}

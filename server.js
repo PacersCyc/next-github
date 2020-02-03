@@ -4,6 +4,7 @@ const session = require('koa-session')
 const koaBody = require('koa-body')
 const next = require('next')
 const Redis = require('ioredis')
+const atob = require('atob')
 
 const auth = require('./server/auth')
 const api = require('./server/api')
@@ -15,6 +16,9 @@ const handle = app.getRequestHandler()
 
 const redis = new Redis()
 
+// 为nodejs增加一个全局方法
+global.atob = atob
+
 app.prepare().then(() => {
   const server = new Koa()
   const router = new Router()
@@ -22,7 +26,7 @@ app.prepare().then(() => {
   server.keys = ['next github app']
 
   server.use(koaBody())
-  
+
   const SESSION_CONFIG = {
     key: 'next',
     // maxAge: 10*1000,

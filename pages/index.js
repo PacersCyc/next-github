@@ -7,6 +7,7 @@ import styled from 'styled-components'
 import { Button, Icon, Tabs } from 'antd'
 import api from '../lib/api'
 import Repo from '../components/Repo'
+import { cacheArray } from '../lib/repo-basic-cache'
 
 // 单独实现数据缓存
 const cache = new LRU({
@@ -36,6 +37,13 @@ const Home = ({ user, userRepos, userStarredRepos, router }) => {
       userStarredRepos && cache.set('userStarredRepos', userStarredRepos)
     }
   }, [userRepos, userStarredRepos])
+
+  useEffect(() => {
+    if (!isServer) {
+      cacheArray(userRepos)
+      cacheArray(userStarredRepos)
+    }
+  })
 
   if (!user || !user.id) {
     return (
