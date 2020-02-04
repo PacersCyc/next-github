@@ -140,7 +140,7 @@ const Home = ({ user, userRepos, userStarredRepos, router }) => {
 }
 
 Home.getInitialProps = async ({ ctx, reduxStore }) => {
-  console.log(reduxStore)
+  // console.log(reduxStore)
   const user = reduxStore.getState().user
   if (!user || !user.id) {
     return {

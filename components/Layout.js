@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, forwardRef } from 'react'
 import axios from 'axios'
 import { connect } from 'react-redux'
 import { withRouter } from 'next/router'
@@ -24,7 +24,7 @@ const footerStyle = {
   textAlign: 'center'
 }
 
-function PageLayout({ children, user, logout, router }) {
+const PageLayout = ({ children, user, logout, router }) => {
   const urlQuery = router.query && router.query.query
 
   const [search, setSearch] = useState(urlQuery || '')
